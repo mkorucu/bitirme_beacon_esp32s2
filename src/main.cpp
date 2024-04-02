@@ -1,4 +1,5 @@
 #include "Temp_Service.h"
+#include "pcb_defines.h"
 
 extern "C"{
     void app_main();
@@ -7,7 +8,7 @@ extern "C"{
 void app_main()
 {
     float temp = -1.0f;
-    Temp_Service temp_service = Temp_Service(GPIO_NUM_2, GPIO_NUM_3);
+    Temp_Service temp_service = Temp_Service(TEMP_EN_PIN, TEMP_BUS_PIN);
 
-    temp_service.measure(&temp);
+    esp_err_t ret = temp_service.measure(&temp);
 }
