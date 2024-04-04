@@ -9,14 +9,14 @@ class PompaDriver
     public:
         PompaDriver(gpio_num_t enable_pin, gpio_num_t right_rotate_pin, gpio_num_t left_rotate_pin);
         ~PompaDriver();
-        void enablePompa();
-        void disablePompa();
+        void enable();
+        void disable();
         void rotateLeft(uint32_t ms);
         void rotateRight(uint32_t ms);
     private:
-        const gpio_num_t pompaEnablePin;
-        const gpio_num_t pompaRightPin;
-        const gpio_num_t pompaLeftPin;
+        gpio_num_t pompaEnablePin;
+        gpio_num_t pompaRightPin;
+        gpio_num_t pompaLeftPin;
 };
 
 #endif

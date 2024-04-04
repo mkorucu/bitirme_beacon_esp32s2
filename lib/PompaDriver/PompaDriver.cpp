@@ -23,12 +23,12 @@ PompaDriver::~PompaDriver()
     ESP_ERROR_CHECK(gpio_set_level(pompaLeftPin, 0));
 }
 
-void PompaDriver::enablePompa()
+void PompaDriver::enable()
 {
     ESP_ERROR_CHECK(gpio_set_level(pompaEnablePin, 1));
 }
 
-void PompaDriver::disablePompa()
+void PompaDriver::disable()
 {
     ESP_ERROR_CHECK(gpio_set_level(pompaEnablePin, 0));
 }
