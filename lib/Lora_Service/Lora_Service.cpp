@@ -15,7 +15,7 @@ Lora_Service::Lora_Service(gpio_num_t enable_pin) : enable_pin(enable_pin)
     };
     ESP_ERROR_CHECK(gpio_config(&pGPIOConfig));
 
-    ESP_ERROR_CHECK(gpio_set_level(enable_pin, 1));
+    ESP_ERROR_CHECK(disable());
 }
 
 Lora_Service::~Lora_Service()
@@ -25,7 +25,7 @@ Lora_Service::~Lora_Service()
 
 int Lora_Service::init()
 {
-    ESP_ERROR_CHECK(gpio_set_level(enable_pin, 0));
+    ESP_ERROR_CHECK(enable());
     vTaskDelay(100 / portTICK_PERIOD_MS);
     memset(buff, 0, 256);
     
@@ -42,9 +42,14 @@ int Lora_Service::init()
     return 0;
 }
 
-void Lora_Service::disable_lora()
+esp_err_t Lora_Service::enable()
 {
-    ESP_ERROR_CHECK(gpio_set_level(enable_pin, 1));
+    return (gpio_set_level(enable_pin, 0));
+}
+
+esp_err_t Lora_Service::disable()
+{
+    return (gpio_set_level(enable_pin, 1));
 }
 
 void Lora_Service::sent_data(char *data)

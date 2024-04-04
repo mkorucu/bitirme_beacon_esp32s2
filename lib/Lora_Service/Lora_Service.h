@@ -21,7 +21,8 @@ public:
     Lora_Service(gpio_num_t enable_pin);
     ~Lora_Service();
     int init();
-    void disable_lora();
+    esp_err_t enable();
+    esp_err_t disable();
     void sent_data(char *data);
     void start_receiver(char *topic_name);
 private:
