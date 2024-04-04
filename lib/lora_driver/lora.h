@@ -5,7 +5,7 @@
 extern "C"{
 #endif
 
-#include "../pcb_defines.h"
+#include "../pcb_defines/pcb_defines.h"
 
 #define CONFIG_RST_GPIO LORA_RST_PIN
 #define CONFIG_CS_GPIO  LORA_CS_PIN

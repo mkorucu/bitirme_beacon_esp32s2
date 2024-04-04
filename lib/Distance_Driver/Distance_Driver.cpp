@@ -6,12 +6,8 @@ Distance_Driver::Distance_Driver(gpio_num_t en_gpio, gpio_num_t trig_gpio, gpio_
         .pin_bit_mask = (1ULL << en_pin),
         .mode = GPIO_MODE_OUTPUT,
     };
-    ESP_ERROR_CHECK(disable());
     ESP_ERROR_CHECK(gpio_config(&pGPIOConfig));
-}
 
-esp_err_t Distance_Driver::init()
-{
     ESP_ERROR_CHECK(enable());
     sensor = {
         .trigger_pin = trig_pin,
@@ -20,10 +16,8 @@ esp_err_t Distance_Driver::init()
     if (ultrasonic_init(&sensor) != ESP_OK)
     {
         ESP_LOGE(tag, "init failed.");
-        return ESP_FAIL;
     }
     ESP_LOGI(tag, "Service was initialized.");
-    return ESP_OK;
 }
 
 esp_err_t Distance_Driver::measure_distance(float *dist)

@@ -26,7 +26,7 @@ esp_err_t Temp_Driver::init()
     vTaskDelay(2000 / portTICK_PERIOD_MS);
 
     // Create a 1-Wire bus, using the RMT timeslot driver
-    owb = owb_rmt_initialize(&rmt_driver_info, data_bus, RMT_CHANNEL_1, RMT_CHANNEL_0);
+    owb = owb_rmt_initialize(&rmt_driver_info, data_pin, RMT_CHANNEL_1, RMT_CHANNEL_0);
     owb_use_crc(owb, true);  // enable CRC check for ROM code
 
     // Find all connected devices
