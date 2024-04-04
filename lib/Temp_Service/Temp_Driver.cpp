@@ -1,17 +1,27 @@
-#include "Temp_Service.h"
+#include "Temp_Driver.h"
 
-Temp_Service::Temp_Service(gpio_num_t enable_gpio, gpio_num_t data_bus): en_pin(enable_gpio), data_pin(data_bus), owb(NULL), device(NULL)
+Temp_Driver::Temp_Driver(gpio_num_t enable_gpio, gpio_num_t data_bus): en_pin(enable_gpio), data_pin(data_bus), owb(NULL), device(NULL)
 {
     gpio_config_t pGPIOConfig = {
         .pin_bit_mask = (1ULL << en_pin),
         .mode = GPIO_MODE_OUTPUT,
     };
-    ESP_ERROR_CHECK(enable_service());
+    ESP_ERROR_CHECK(disable());
     ESP_ERROR_CHECK(gpio_config(&pGPIOConfig));
     
-    gpio_pulldown_dis(data_bus);
-    gpio_pullup_en(data_bus);
+    ESP_ERROR_CHECK(gpio_pulldown_dis(data_bus));
+    ESP_ERROR_CHECK(gpio_pullup_en(data_bus));
+}
 
+Temp_Driver::~Temp_Driver()
+{
+    ds18b20_free(&device);
+    owb_uninitialize(owb);
+}
+
+esp_err_t Temp_Driver::init()
+{
+    ESP_ERROR_CHECK(enable());
     // Stable readings require a brief period before communication
     vTaskDelay(2000 / portTICK_PERIOD_MS);
 
@@ -31,32 +41,30 @@ Temp_Service::Temp_Service(gpio_num_t enable_gpio, gpio_num_t data_bus): en_pin(
     else
     {
         ESP_LOGI(tag,"No DS18B20 devices detected!");
+        return (ESP_FAIL);
     }
+    
     // Create DS18B20 devices on the 1-Wire bus
     device = ds18b20_malloc();
     ds18b20_init_solo(device, owb);          // only one device on bus
     ds18b20_use_crc(device, true);           // enable CRC check on all reads
     ds18b20_set_resolution(device, DS18B20_RESOLUTION_12_BIT);
     ESP_LOGI("SERVICE", "INIT DONE.");
+    
+    return (ESP_OK);
 }
 
-Temp_Service::~Temp_Service()
-{
-    ds18b20_free(&device);
-    owb_uninitialize(owb);
-}
-
-esp_err_t Temp_Service::enable_service()
+esp_err_t Temp_Driver::enable()
 {
     return (gpio_set_level(en_pin, 0));
 }
 
-esp_err_t Temp_Service::disable_service()
+esp_err_t Temp_Driver::disable()
 {
     return (gpio_set_level(en_pin, 1));
 }
 
-esp_err_t Temp_Service::measure(float *val)
+esp_err_t Temp_Driver::measure(float *val)
 {
     //Read temperatures more efficiently by starting conversions on all devices at the same time
     DS18B20_ERROR err;
