@@ -1,23 +1,32 @@
-#include "Distance_Service.h"
+#include "Distance_Driver.h"
 
-Distance_Service::Distance_Service(gpio_num_t en_gpio, gpio_num_t trig_gpio, gpio_num_t echo_gpio) : en_pin(en_gpio), trig_pin(trig_gpio), echo_pin(echo_gpio)
+Distance_Driver::Distance_Driver(gpio_num_t en_gpio, gpio_num_t trig_gpio, gpio_num_t echo_gpio) : en_pin(en_gpio), trig_pin(trig_gpio), echo_pin(echo_gpio)
 {
     gpio_config_t pGPIOConfig = {
         .pin_bit_mask = (1ULL << en_pin),
         .mode = GPIO_MODE_OUTPUT,
     };
-    ESP_ERROR_CHECK(enable());
+    ESP_ERROR_CHECK(disable());
     ESP_ERROR_CHECK(gpio_config(&pGPIOConfig));
-    
+}
+
+esp_err_t Distance_Driver::init()
+{
+    ESP_ERROR_CHECK(enable());
     sensor = {
         .trigger_pin = trig_pin,
         .echo_pin = echo_pin
     };
-    ESP_ERROR_CHECK(ultrasonic_init(&sensor));
+    if (ultrasonic_init(&sensor) != ESP_OK)
+    {
+        ESP_LOGE(tag, "init failed.");
+        return ESP_FAIL;
+    }
     ESP_LOGI(tag, "Service was initialized.");
+    return ESP_OK;
 }
 
-esp_err_t Distance_Service::measure_distance(float *dist)
+esp_err_t Distance_Driver::measure_distance(float *dist)
 {
     esp_err_t res = ultrasonic_measure(&sensor, MAX_DISTANCE_CM, dist);
 
@@ -42,12 +51,12 @@ esp_err_t Distance_Service::measure_distance(float *dist)
     return res;
 }
 
-esp_err_t Distance_Service::enable()
+esp_err_t Distance_Driver::enable()
 {
     return gpio_set_level(en_pin, 1);
 }
 
-esp_err_t Distance_Service::disable()
+esp_err_t Distance_Driver::disable()
 {
     return gpio_set_level(en_pin, 0);
 }

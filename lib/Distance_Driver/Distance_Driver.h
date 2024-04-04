@@ -1,5 +1,5 @@
-#ifndef __DISTANCE_SERVICE_H
-#define __DISTANCE_SERVICE_H
+#ifndef __DISTANCE_DRIVER_H
+#define __DISTANCE_DRIVER_H
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -11,10 +11,11 @@
 
 #define MAX_DISTANCE_CM 500 // 5m max
 
-class Distance_Service
+class Distance_Driver
 {
     public:
-        Distance_Service(gpio_num_t en_gpio, gpio_num_t trig_gpio, gpio_num_t echo_gpio);
+        Distance_Driver(gpio_num_t en_gpio, gpio_num_t trig_gpio, gpio_num_t echo_gpio);
+        esp_err_t init();
         esp_err_t measure_distance(float *val);
         esp_err_t enable();
         esp_err_t disable();
@@ -23,7 +24,7 @@ class Distance_Service
         gpio_num_t trig_pin;
         gpio_num_t echo_pin;
         
-        const char *tag = "Distance_Service";
+        const char *tag = "Distance_Driver";
         
         ultrasonic_sensor_t sensor;
 };
