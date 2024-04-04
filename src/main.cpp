@@ -1,4 +1,9 @@
-extern "C" {void app_main();}
+#include "Temp_Driver.h"
+#include "pcb_defines.h"
+
+extern "C"{
+    void app_main();
+}
 
 #include <PompaDriver.h>
 #include "pcb_defines.h"
