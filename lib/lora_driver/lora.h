@@ -6,13 +6,23 @@ extern "C"{
 #endif
 
 #include "../pcb_defines/pcb_defines.h"
+#include <string.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "esp_system.h"
+#include "esp_log.h"
+#include "driver/spi_master.h"
+#include "driver/gpio.h"
 
-#define CONFIG_RST_GPIO LORA_RST_PIN
-#define CONFIG_CS_GPIO  LORA_CS_PIN
-#define CONFIG_MISO_GPIO    LORA_MISO_PIN
-#define CONFIG_MOSI_GPIO    LORA_MOSI_PIN
-#define CONFIG_SCK_GPIO     LORA_SCK_PIN
 #define CONFIG_SPI2_HOST    1
+
+// SPI Stuff
+#if CONFIG_SPI2_HOST
+#define HOST_ID SPI2_HOST
+#elif CONFIG_SPI3_HOST
+#define HOST_ID SPI3_HOST
+#endif
+
 
 void lora_reset(void);
 void lora_explicit_header_mode(void);
@@ -36,6 +46,7 @@ long lora_get_preamble_length(void);
 void lora_set_sync_word(int sw);
 void lora_enable_crc(void);
 void lora_disable_crc(void);
+int spi_init(gpio_num_t miso, gpio_num_t mosi, gpio_num_t sck,gpio_num_t rst, gpio_num_t cs);
 int lora_init(void);
 void lora_send_packet(uint8_t *buf, int size);
 int lora_receive_packet(uint8_t *buf, int size);

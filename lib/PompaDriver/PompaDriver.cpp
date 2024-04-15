@@ -36,6 +36,7 @@ void PompaDriver::disable()
 void PompaDriver::rotateLeft(uint32_t ms)
 {
     ESP_ERROR_CHECK(gpio_set_level(pompaLeftPin, 1));
+    ESP_LOGI(tag, "ROTATING LEFT");
     vTaskDelay(ms / portTICK_PERIOD_MS);
     ESP_ERROR_CHECK(gpio_set_level(pompaLeftPin, 0));
 }
@@ -43,6 +44,7 @@ void PompaDriver::rotateLeft(uint32_t ms)
 void PompaDriver::rotateRight(uint32_t ms)
 {
     ESP_ERROR_CHECK(gpio_set_level(pompaRightPin, 1));
+    ESP_LOGI(tag, "ROTATING RIGHT");
     vTaskDelay(ms / portTICK_PERIOD_MS);
     ESP_ERROR_CHECK(gpio_set_level(pompaRightPin, 0));
 }

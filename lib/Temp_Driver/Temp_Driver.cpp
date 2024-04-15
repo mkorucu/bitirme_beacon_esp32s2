@@ -49,7 +49,7 @@ esp_err_t Temp_Driver::init()
     ds18b20_init_solo(device, owb);          // only one device on bus
     ds18b20_use_crc(device, true);           // enable CRC check on all reads
     ds18b20_set_resolution(device, DS18B20_RESOLUTION_12_BIT);
-    ESP_LOGI("SERVICE", "INIT DONE.");
+    ESP_LOGI(tag, "INIT DONE.");
     
     return (ESP_OK);
 }

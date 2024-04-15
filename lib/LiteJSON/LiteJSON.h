@@ -15,7 +15,7 @@ class LiteJSON {
         
         const char left_brace[2] = "{";
         const char right_brace[2] = "}"; 
-        const char double_quote[4] = "\\22";
+        const char double_quote[4] = "\"";
         const char comma[2] = ",";
         const char colon[2] = ":";
         

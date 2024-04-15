@@ -1,10 +1,3 @@
-#include <string.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "esp_system.h"
-#include "esp_log.h"
-#include "driver/spi_master.h"
-#include "driver/gpio.h"
 #include "lora.h"
 
 #ifdef __cplusplus
@@ -70,12 +63,6 @@ extern "C"{
 
 #define TIMEOUT_RESET                  100
 
-// SPI Stuff
-#if CONFIG_SPI2_HOST
-#define HOST_ID SPI2_HOST
-#elif CONFIG_SPI3_HOST
-#define HOST_ID SPI3_HOST
-#endif
 
 
 #define TAG "LORA"
@@ -220,17 +207,6 @@ lora_read_reg_buffer(int reg, uint8_t *val, int len)
    free(in);
 }
 
-/**
- * Perform physical reset on the Lora chip
- */
-void 
-lora_reset(void)
-{
-   gpio_set_level(CONFIG_RST_GPIO, 0);
-   vTaskDelay(pdMS_TO_TICKS(1));
-   gpio_set_level(CONFIG_RST_GPIO, 1);
-   vTaskDelay(pdMS_TO_TICKS(10));
-}
 
 /**
  * Configure explicit header mode.
@@ -516,27 +492,24 @@ lora_disable_crc(void)
    lora_write_reg(REG_MODEM_CONFIG_2, lora_read_reg(REG_MODEM_CONFIG_2) & 0xfb);
 }
 
-/**
- * Perform hardware initialization.
- */
-int 
-lora_init(void)
+int
+spi_init(gpio_num_t miso, gpio_num_t mosi, gpio_num_t sck,gpio_num_t rst, gpio_num_t cs)
 {
    esp_err_t ret;
 
    /*
     * Configure CPU hardware to communicate with the radio chip
     */
-   gpio_reset_pin(CONFIG_RST_GPIO);
-   gpio_set_direction(CONFIG_RST_GPIO, GPIO_MODE_OUTPUT);
-   gpio_reset_pin(CONFIG_CS_GPIO);
-   gpio_set_direction(CONFIG_CS_GPIO, GPIO_MODE_OUTPUT);
-   gpio_set_level(CONFIG_CS_GPIO, 1);
+   gpio_reset_pin(rst);
+   gpio_set_direction(rst, GPIO_MODE_OUTPUT);
+   gpio_reset_pin(cs);
+   gpio_set_direction(cs, GPIO_MODE_OUTPUT);
+   gpio_set_level(cs, 1);
 
    spi_bus_config_t bus = {
-      .miso_io_num = CONFIG_MISO_GPIO,
-      .mosi_io_num = CONFIG_MOSI_GPIO,
-      .sclk_io_num = CONFIG_SCK_GPIO,
+      .miso_io_num = miso,
+      .mosi_io_num = mosi,
+      .sclk_io_num = sck,
       .quadwp_io_num = -1,
       .quadhd_io_num = -1,
       .max_transfer_sz = 0
@@ -549,19 +522,24 @@ lora_init(void)
    spi_device_interface_config_t dev = {
       .clock_speed_hz = 9000000,
       .mode = 0,
-      .spics_io_num = CONFIG_CS_GPIO,
+      .spics_io_num = cs,
       .queue_size = 7,
       .flags = 0,
       .pre_cb = NULL
    };
    //ret = spi_bus_add_device(VSPI_HOST, &dev, &__spi);
    ret = spi_bus_add_device(HOST_ID, &dev, &__spi);
-   assert(ret == ESP_OK);
 
-   /*
-    * Perform hardware reset.
-    */
-   lora_reset();
+   return ret;
+}
+
+/**
+ * Perform hardware initialization.
+ */
+int 
+lora_init(void)
+{
+   esp_err_t ret;
 
    /*
     * Check version.

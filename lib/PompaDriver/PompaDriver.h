@@ -1,6 +1,7 @@
 #ifndef __POMPADRIVER_H
 #define __POMPADRIVER_H
 
+#include <esp_log.h>
 #include <driver/gpio.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
@@ -17,6 +18,7 @@ class PompaDriver
         gpio_num_t pompaEnablePin;
         gpio_num_t pompaRightPin;
         gpio_num_t pompaLeftPin;
+        const char *tag = "POMPA";
 };
 
 #endif

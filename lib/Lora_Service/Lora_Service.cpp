@@ -4,8 +4,9 @@
 Lora_Service::Lora_Service(MQTT_Service *MQTT_service) : mqtt_service(MQTT_service) {}
 #endif
 
-Lora_Service::Lora_Service(gpio_num_t enable_pin) : enable_pin(enable_pin)
+Lora_Service::Lora_Service(gpio_num_t enable_pin, gpio_num_t miso, gpio_num_t mosi, gpio_num_t sck,gpio_num_t rst, gpio_num_t cs) : enable_pin(enable_pin)
 {
+    //initializes enable pin
     gpio_config_t pGPIOConfig = {
     .pin_bit_mask = (1ULL << enable_pin),
     .mode = GPIO_MODE_OUTPUT,
@@ -15,7 +16,11 @@ Lora_Service::Lora_Service(gpio_num_t enable_pin) : enable_pin(enable_pin)
     };
     ESP_ERROR_CHECK(gpio_config(&pGPIOConfig));
 
-    ESP_ERROR_CHECK(disable());
+    //initializes SPI
+    spi_init(miso, mosi, sck, rst, cs);
+
+    //disables LoRa
+    ESP_ERROR_CHECK(disable()); //disables
 }
 
 Lora_Service::~Lora_Service()
@@ -25,35 +30,41 @@ Lora_Service::~Lora_Service()
 
 int Lora_Service::init()
 {
-    ESP_ERROR_CHECK(enable());
-    vTaskDelay(100 / portTICK_PERIOD_MS);
+    //hardware reset using spi reset pin 
+    gpio_set_level(reset_pin, 0);
+    vTaskDelay(10 / portTICK_PERIOD_MS);
+    gpio_set_level(reset_pin, 1);
+    vTaskDelay(10 / portTICK_PERIOD_MS);
+
     memset(buff, 0, 256);
-    
+
     if (lora_init() == 0)
     {
         ESP_LOGE(pcTaskGetName(NULL), "Does not recognize the module");
-        return -1;
+        return ESP_FAIL;
     }
     lora_set_frequency(433e6); // 433MHz
     lora_enable_crc();
     lora_set_coding_rate(1);
     lora_set_bandwidth(7);
     lora_set_spreading_factor(7);
-    return 0;
+    ESP_LOGI(tag, "INITIALIZED.");
+    return ESP_OK;
 }
 
 esp_err_t Lora_Service::enable()
 {
-    return (gpio_set_level(enable_pin, 0));
+    return(gpio_set_level(enable_pin, 0));
 }
 
 esp_err_t Lora_Service::disable()
 {
-    return (gpio_set_level(enable_pin, 1));
+    return(gpio_set_level(enable_pin, 1));
 }
 
 void Lora_Service::sent_data(char *data)
 {
+    ESP_LOGI(tag, "Sending packet=%s", data);
     memset(buff, 0, 256);
     memcpy(buff, data, strlen(data));
     lora_send_packet(buff, strlen(data));

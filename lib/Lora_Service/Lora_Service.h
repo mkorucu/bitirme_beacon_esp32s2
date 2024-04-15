@@ -18,7 +18,7 @@ public:
     #ifdef MQTT_SERVICE_H
     Lora_Service(MQTT_Service *MQTT_service);
     #endif
-    Lora_Service(gpio_num_t enable_pin);
+    Lora_Service(gpio_num_t enable_pin, gpio_num_t miso, gpio_num_t mosi, gpio_num_t sck,gpio_num_t rst, gpio_num_t cs);
     ~Lora_Service();
     int init();
     esp_err_t enable();
@@ -30,6 +30,7 @@ private:
     MQTT_Service *mqtt_service;
     #endif
     const gpio_num_t enable_pin;
+    gpio_num_t reset_pin;
     uint8_t buff[256];
     char buff_str[257];
     char topic_name[32];
