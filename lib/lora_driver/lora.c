@@ -492,10 +492,9 @@ lora_disable_crc(void)
    lora_write_reg(REG_MODEM_CONFIG_2, lora_read_reg(REG_MODEM_CONFIG_2) & 0xfb);
 }
 
-int
+void
 spi_init(gpio_num_t miso, gpio_num_t mosi, gpio_num_t sck,gpio_num_t rst, gpio_num_t cs)
 {
-   esp_err_t ret;
 
    /*
     * Configure CPU hardware to communicate with the radio chip
@@ -516,8 +515,7 @@ spi_init(gpio_num_t miso, gpio_num_t mosi, gpio_num_t sck,gpio_num_t rst, gpio_n
    };
            
    //ret = spi_bus_initialize(VSPI_HOST, &bus, 0);
-   ret = spi_bus_initialize(HOST_ID, &bus, SPI_DMA_CH_AUTO);
-   assert(ret == ESP_OK);
+   ESP_ERROR_CHECK(spi_bus_initialize(HOST_ID, &bus, SPI_DMA_CH_AUTO));
 
    spi_device_interface_config_t dev = {
       .clock_speed_hz = 9000000,
@@ -528,9 +526,7 @@ spi_init(gpio_num_t miso, gpio_num_t mosi, gpio_num_t sck,gpio_num_t rst, gpio_n
       .pre_cb = NULL
    };
    //ret = spi_bus_add_device(VSPI_HOST, &dev, &__spi);
-   ret = spi_bus_add_device(HOST_ID, &dev, &__spi);
-
-   return ret;
+   ESP_ERROR_CHECK(spi_bus_add_device(HOST_ID, &dev, &__spi));
 }
 
 /**

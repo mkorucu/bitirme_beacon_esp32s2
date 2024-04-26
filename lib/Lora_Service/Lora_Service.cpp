@@ -4,7 +4,7 @@
 Lora_Service::Lora_Service(MQTT_Service *MQTT_service) : mqtt_service(MQTT_service) {}
 #endif
 
-Lora_Service::Lora_Service(gpio_num_t enable_pin, gpio_num_t miso, gpio_num_t mosi, gpio_num_t sck,gpio_num_t rst, gpio_num_t cs) : enable_pin(enable_pin)
+Lora_Service::Lora_Service(gpio_num_t en_pin, gpio_num_t miso, gpio_num_t mosi, gpio_num_t sck,gpio_num_t rst, gpio_num_t cs) : enable_pin(en_pin), reset_pin(rst)
 {
     //initializes enable pin
     gpio_config_t pGPIOConfig = {
@@ -31,9 +31,9 @@ Lora_Service::~Lora_Service()
 int Lora_Service::init()
 {
     //hardware reset using spi reset pin 
-    gpio_set_level(reset_pin, 0);
+    ESP_ERROR_CHECK(gpio_set_level(reset_pin, 0));
     vTaskDelay(10 / portTICK_PERIOD_MS);
-    gpio_set_level(reset_pin, 1);
+    ESP_ERROR_CHECK(gpio_set_level(reset_pin, 1));
     vTaskDelay(10 / portTICK_PERIOD_MS);
 
     memset(buff, 0, 256);
