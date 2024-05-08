@@ -36,7 +36,7 @@ int Lora_Service::init()
     ESP_ERROR_CHECK(gpio_set_level(reset_pin, 1));
     vTaskDelay(10 / portTICK_PERIOD_MS);
 
-    memset(buff, 0, 256);
+    memset(buff, 0, sizeof(buff));
 
     if (lora_init() == 0)
     {
@@ -65,10 +65,10 @@ esp_err_t Lora_Service::disable()
 void Lora_Service::sent_data(char *data)
 {
     ESP_LOGI(tag, "Sending packet=%s", data);
-    memset(buff, 0, 256);
+    memset(buff, 0, sizeof(buff));
     memcpy(buff, data, strlen(data));
-    lora_send_packet(buff, strlen(data));
-    ESP_LOGI(tag, "%d byte packet sent...", strlen(data));
+    lora_send_packet(buff, strlen(data) + 1);
+    ESP_LOGI(tag, "%d byte packet sent...", strlen(data) + 1);
     int lost = lora_packet_lost();
     if (lost != 0)
     {
@@ -91,10 +91,6 @@ void Lora_Service::receiver_task()
 		if (lora_received()) {
 			int rxLen = lora_receive_packet(buff, sizeof(buff));
 			ESP_LOGI(pcTaskGetName(NULL), "%d byte packet received:[%.*s]", rxLen, rxLen, buff);
-			memcpy(buff_str, buff, 256);
-            #ifdef MQTT_SERVICE_H
-            mqtt_service->sent_data(topic_name, buff_str);
-            #endif
 		}
 		vTaskDelay(1); // Avoid WatchDog alerts
 	} // end while

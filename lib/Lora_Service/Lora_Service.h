@@ -31,8 +31,7 @@ private:
     #endif
     const gpio_num_t enable_pin;
     gpio_num_t reset_pin;
-    uint8_t buff[256];
-    char buff_str[257];
+    uint8_t buff[1024];
     char topic_name[32];
     const char *tag = "LORA";
     void receiver_task();

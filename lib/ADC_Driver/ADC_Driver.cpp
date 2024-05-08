@@ -53,8 +53,8 @@ void ADC_Driver::measure_bat_level(uint8_t *lvl)
         bat += j;
         vTaskDelay(1);
     }
-    bat /= 10;
     bat *= 2;
+    bat /= 10;
     *lvl = (bat - 3600) * 100 / 600;
     ESP_LOGI(tag, "bat adc: %d | battery level=%d", bat, *lvl);
 }
@@ -75,7 +75,7 @@ void ADC_Driver::measure_ph_level(float *ph_lvl)
     ESP_LOGI(tag, "ph_adc= %.1f | ph_res=%.1f",adc_lvl, *ph_lvl);
 }
 
-void ADC_Driver::measure_turbidity(uint8_t *turb_lvl)
+void ADC_Driver::measure_turbidity(int *turb_lvl)
 {
     int turb = 0;
     for (int i = 0, j = 0; i < 10; i++)

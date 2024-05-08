@@ -14,7 +14,7 @@ class ADC_Driver
         ADC_Driver(adc_channel_t battery_channel, adc_channel_t ph_channel, adc_channel_t turb_channel);
         void measure_bat_level(uint8_t *bat_lvl);
         void measure_ph_level(float *ph_lvl);
-        void measure_turbidity(uint8_t *turb_lvl);
+        void measure_turbidity(int *turb_lvl);
     private:
         adc_channel_t battery_channel;
         adc_oneshot_unit_handle_t adc1_handle;
