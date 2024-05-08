@@ -68,7 +68,6 @@ void ADC_Driver::measure_ph_level(float *ph_lvl)
     {
         ESP_ERROR_CHECK(adc_oneshot_get_calibrated_result(adc2_handle,adc2_cali_handle, ph_channel, &j));
         ph += j;
-        printf("res=%d\n",j);
         vTaskDelay(1);
     }
     adc_lvl = (float)ph / 10 / 1024;

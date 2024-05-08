@@ -31,7 +31,7 @@ void app_main()
 
     LiteJSON lite_json = LiteJSON(256); // {}
 
-    float temp = 0.0f, dist = 0.0f, ph_lvl = -1.0f;
+    float temp = -99.0f, dist = -99.0f, ph_lvl = -1.0f;
     uint32_t  data_index = 0;
     uint8_t mac_str[8], bat_lvl = 0, turb_lvl;
     esp_efuse_mac_get_default(mac_str);
@@ -48,6 +48,7 @@ void app_main()
         vTaskDelay(1000 / portTICK_PERIOD_MS); // wait 10 seconds for water to settle
 
         //measure temp
+        temp_driver.enable();
         temp_driver.init();
         temp_driver.measure(&temp);
         temp_driver.disable();

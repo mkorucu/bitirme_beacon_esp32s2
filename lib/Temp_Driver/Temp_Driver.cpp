@@ -21,7 +21,6 @@ Temp_Driver::~Temp_Driver()
 
 esp_err_t Temp_Driver::init()
 {
-    ESP_ERROR_CHECK(enable());
     // Stable readings require a brief period before communication
     vTaskDelay(2000 / portTICK_PERIOD_MS);
 
@@ -79,6 +78,7 @@ esp_err_t Temp_Driver::measure(float *val)
         return ESP_FAIL;
     }
     ESP_LOGI(tag,"Temperature readings (degrees C): %.2fC", *val);
-    
+    if (*val < -50)
+        *val = -99.0f;
     return ESP_OK;
 }

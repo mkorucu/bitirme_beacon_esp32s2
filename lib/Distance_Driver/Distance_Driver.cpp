@@ -42,6 +42,8 @@ esp_err_t Distance_Driver::measure_distance(float *dist)
         default:
             ESP_LOGE(tag, "%s\n", esp_err_to_name(res));
     }
+    if (res != ESP_OK)
+        *dist = -99.0f;
     return res;
 }
 
