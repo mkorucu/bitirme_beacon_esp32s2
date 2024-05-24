@@ -11,7 +11,7 @@
 #include "PH_Driver.h"
 #include "Turbidity_Driver.h"
 
-#define DEEP_SLEEP_SEC 60
+#define DEEP_SLEEP_SEC  60
 #define PUMP_EN_SEC     3
 
 extern "C"{
@@ -32,7 +32,7 @@ void app_main()
     PompaDriver pompaDriver = PompaDriver(POMPA_EN_PIN, POMPA_RIGHT_PIN, POMPA_LEFT_PIN);
     Temp_Driver temp_driver = Temp_Driver(TEMP_EN_PIN, TEMP_BUS_PIN);
     Distance_Driver distance_driver = Distance_Driver(DIST_EN_PIN, DIST_TRIG_PIN, DIST_ECHO_PIN);
-    PH_Driver ph_driver = PH_Driver(PH_ADC_PIN);
+    PH_Driver ph_driver = PH_Driver(PH_EN_PIN);
     Turbidity_Driver turbidity_driver = Turbidity_Driver(TURB_EN_PIN);
     Lora_Service lora_service = Lora_Service(LORA_EN_PIN, LORA_MISO_PIN, LORA_MOSI_PIN, LORA_SCK_PIN, LORA_RST_PIN, LORA_CS_PIN);
 
@@ -81,7 +81,7 @@ void app_main()
         adc_driver.measure_ph_level(&ph_lvl);
         ph_driver.disable();
         lite_json.add_pair("ph", ph_lvl);
-        
+
         //sent data
         lora_service.enable();
         lora_service.init();

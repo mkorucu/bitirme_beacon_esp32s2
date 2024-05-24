@@ -15,12 +15,12 @@ Turbidity_Driver::Turbidity_Driver(gpio_num_t en_gpio_num) : enable_pin(en_gpio_
 
 void Turbidity_Driver::enable()
 {
-    ESP_ERROR_CHECK(gpio_set_level(enable_pin, 1));
+    ESP_ERROR_CHECK(gpio_set_level(enable_pin, 0));
     vTaskDelay(100/ portTICK_PERIOD_MS);
 }
 
 void Turbidity_Driver::disable()
 {
-    ESP_ERROR_CHECK(gpio_set_level(enable_pin, 0));
+    ESP_ERROR_CHECK(gpio_set_level(enable_pin, 1));
     vTaskDelay(100/ portTICK_PERIOD_MS);
 }
