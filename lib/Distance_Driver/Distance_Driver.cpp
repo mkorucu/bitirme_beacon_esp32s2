@@ -22,6 +22,7 @@ Distance_Driver::Distance_Driver(gpio_num_t en_gpio, gpio_num_t trig_gpio, gpio_
 
 esp_err_t Distance_Driver::measure_distance(float *dist)
 {
+    vTaskDelay(50 / portTICK_PERIOD_MS);
     esp_err_t res = ultrasonic_measure(&sensor, MAX_DISTANCE_CM, dist);
 
     switch (res)
@@ -44,6 +45,7 @@ esp_err_t Distance_Driver::measure_distance(float *dist)
     }
     if (res != ESP_OK)
         *dist = -99.0f;
+    vTaskDelay(50 / portTICK_PERIOD_MS);
     return res;
 }
 

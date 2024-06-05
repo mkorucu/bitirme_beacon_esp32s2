@@ -9,15 +9,6 @@
 #include <inttypes.h>
 
 class LiteJSON {
-    private:
-        char *buffer;
-        bool is_empty;
-        
-        const char left_brace[2] = "{";
-        const char right_brace[2] = "}"; 
-        const char double_quote[4] = "\"";
-        const char comma[2] = ",";
-        const char colon[2] = ":";
         
     public:
         LiteJSON(uint16_t buffer_size){
@@ -25,11 +16,9 @@ class LiteJSON {
             buffer[0] = '\0';
             is_empty = true;
         };
-        
         ~LiteJSON(){
             free(buffer);
         };
-        
         void add_pair(const char *key, const char *value){
             if(is_empty){
               strcat(buffer,left_brace);
@@ -49,7 +38,6 @@ class LiteJSON {
             strcat(buffer,value);
             strcat(buffer,double_quote);
         };
-        
         void add_pair(const char *key, int value){
             if(is_empty){
               strcat(buffer,left_brace);
@@ -68,7 +56,6 @@ class LiteJSON {
             uint16_t end = strlen(buffer);
             sprintf(buffer+end,"%d",value);
         };
-        
         void add_pair(const char *key, double value){
             if(is_empty){
               strcat(buffer,left_brace);
@@ -91,16 +78,24 @@ class LiteJSON {
             uint16_t end = strlen(buffer);
             sprintf(buffer+end,"%.1f",value);
         };
-    
         char* serialize(){
             strcat(buffer,"}");
             return buffer;
         }
-
         void clear(){
             buffer[0] = '\0';      
             is_empty = true;
         }
+    
+    private:
+        char *buffer;
+        bool is_empty;
+        
+        const char left_brace[2] = "{";
+        const char right_brace[2] = "}"; 
+        const char double_quote[4] = "\"";
+        const char comma[2] = ",";
+        const char colon[2] = ":";
         
 };
 

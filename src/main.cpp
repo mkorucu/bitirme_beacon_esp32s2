@@ -11,7 +11,7 @@
 #include "PH_Driver.h"
 #include "Turbidity_Driver.h"
 
-#define DEEP_SLEEP_SEC  60
+#define DEEP_SLEEP_SEC  300
 #define PUMP_EN_SEC     3
 
 extern "C"{
@@ -40,7 +40,7 @@ void app_main()
 
     float temp = -99.0f, dist = -99.0f, ph_lvl = -1.0f;
     uint8_t mac_str[8], bat_lvl = 0;
-    int turb_lvl;
+    int turb_lvl = 0;
     esp_efuse_mac_get_default(mac_str);
 
     while(1)
